@@ -50,8 +50,26 @@ public class MatchingEngine implements IMatchingEngine {
     }
 
     @Override
-    public void remove(long orderId) {
+    public void remove(Order order) {
+        if (order.getSide() == Side.BUY) {
+            _remove(buyTree, order);
+        } else {
+            _remove(sellTree, order);
+        }
+    }
 
+    private void _remove(SortedMap<Double, Queue<Order>> treeMap, Order order) {
+        if (treeMap.containsKey(order.getPrice())) {
+            Queue<Order> q = treeMap.get(order.getPrice());
+            boolean isRemoved = q.remove(order);
+            if (isRemoved && q.isEmpty()) {
+                _removeLimit(treeMap, order.getPrice());
+            }
+        }
+    }
+
+    private void _removeLimit(SortedMap<Double, Queue<Order>> treeMap, double price) {
+        treeMap.remove(price);
     }
 
     public SortedMap<Double, Queue<Order>> getBuyTree() {

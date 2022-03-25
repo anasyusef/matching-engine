@@ -1,6 +1,6 @@
 package com.matchingengine;
 
 public interface IMatchingEngine extends IReadOnlyMatchingEngine {
-    public void add(Order order);
-    public void remove(long orderId);
+    void add(Order order);
+    void remove(Order order);
 }
