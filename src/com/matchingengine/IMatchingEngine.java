@@ -1,6 +1,9 @@
 package com.matchingengine;
 
+import java.util.List;
+
 public interface IMatchingEngine extends IReadOnlyMatchingEngine {
-    void add(Order order);
-    void remove(Order order);
+    List<Trade> add(Order order);
+
+    void remove(long orderId);
 }
