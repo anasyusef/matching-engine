@@ -15,12 +15,14 @@ public class MatchingEngine implements IMatchingEngine {
     private final Map<Long, Order> orders;
     private final SortedMap<Double, Queue<Order>> buyTree;
     private final SortedMap<Double, Queue<Order>> sellTree;
+    private int ordersExecuted;
 
     public MatchingEngine(String name) {
         this.name = name;
         this.orders = new HashMap<>();
         this.buyTree = new TreeMap<>(new BidLimitComparer());
         this.sellTree = new TreeMap<>(new AskLimitComparer());
+        this.ordersExecuted = 0;
     }
 
     @Override
@@ -110,6 +112,7 @@ public class MatchingEngine implements IMatchingEngine {
                     executedPrice = peekBuy.getPrice();
                 }
                 trades.add(new Trade(makerOrderId, orderToMatch.getOrderId(), executedPrice, executedSize));
+                ordersExecuted++;
             }
             bestBid = getBestBid();
             bestAsk = getBestAsk();
@@ -121,6 +124,10 @@ public class MatchingEngine implements IMatchingEngine {
         if (isEmpty) {
             treeMap.remove(limitPrice);
         }
+    }
+
+    public int getOrdersExecuted() {
+        return ordersExecuted;
     }
 
     @Override
