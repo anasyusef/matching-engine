@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MatchingEngineTest {
 
-    final double DELTA = 0.000000000001;
+    private final static double DELTA = 0.000000000001;
 
     private final MatchingEngine matchingEngine = new MatchingEngine("BTC/USDT");
 
@@ -106,7 +106,6 @@ class MatchingEngineTest {
         setup();
         Order order = new Order(99, Side.SELL, 35000.56, 0.6);
         List<Trade> trades = matchingEngine.add(order);
-        System.out.println(trades);
         assertEquals(trades.size(),  2);
 
         Trade trade0 = trades.get(0);
