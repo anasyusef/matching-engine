@@ -25,6 +25,17 @@ public class MatchingEnginePerformance {
         return orders;
     }
 
+    private Order[] generateOrders(int startRange, int endRange, double minPriceRange, double maxPriceRange, Side side) {
+        Order[] orders = new Order[endRange - startRange];
+        for (int i = 0; i < (endRange - startRange); i++) {
+            double priceToTwoDp = minPriceRange +
+                    (double) Math.round((maxPriceRange - minPriceRange) * Math.random() * 100) / 100;
+            double randomSize = (double) Math.round(Math.random() * 100) / 100;
+            orders[i] = new Order(startRange + i, side, priceToTwoDp, randomSize);
+        }
+        return orders;
+    }
+
     /**
      * Benchmarks adding orders to a dense (prices are much closer to each other and there is more depth at each level)
      * order-book.
@@ -62,7 +73,49 @@ public class MatchingEnginePerformance {
         return endTime - startTime;
     }
 
-    public static void orderBookReportTest(int orders) {
-        // Tests matching engine reporting more market depth. Benchmarks market depth
+    public void benchmarkOrderBookMarketDepth(int num_orders) {
+        double minPriceRange = 0.01;
+        double maxPriceRange = 100;
+        long startTime = System.currentTimeMillis();
+        MatchingEngine me = new MatchingEngine("LINK/USDT");
+        Order[] orders = generateOrders(num_orders, minPriceRange, maxPriceRange);
+        for (Order order: orders) {
+            me.add(order);
+            me.getMarketDepth();
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println("Getting market depth on " + num_orders + " orders - Execution time: "
+                + (endTime - startTime)  + " milliseconds");
+    }
+
+    public void benchmakrOrderBookRemove(int num_orders) {
+        double minPriceRangeBuy = 1;
+        double maxPriceRangeBuy = 100;
+
+        double minPriceRangeSell = 101;
+        double maxPriceRangeSell = 200;
+
+        MatchingEngine me = new MatchingEngine("LINK/USDT");
+        Order[] buyOrders = generateOrders(0, num_orders / 2, minPriceRangeBuy, maxPriceRangeBuy, Side.BUY);
+        Order[] sellOrders = generateOrders((num_orders / 2), num_orders, minPriceRangeSell, maxPriceRangeSell, Side.SELL);
+        for (Order order: buyOrders) {
+            me.add(order);
+        }
+
+        for (Order order: sellOrders) {
+            me.add(order);
+        }
+
+        System.out.println("Buy levels: " + me.getMarketDepth().get(0).size() +
+                " - Sell levels: " + me.getMarketDepth().get(1).size());
+
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < num_orders; i++) {
+            me.remove(i);
+        }
+        long endTime = System.currentTimeMillis();
+
+        System.out.println("Removing " + num_orders + " orders - Execution time: "
+                + (endTime - startTime)  + " milliseconds");
     }
 }

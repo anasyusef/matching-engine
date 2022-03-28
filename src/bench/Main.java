@@ -22,5 +22,17 @@ public class Main {
         mePerf.benchmarkAddOrdersSparseOrderBook(320_000);
         mePerf.benchmarkAddOrdersSparseOrderBook(640_000);
         mePerf.benchmarkAddOrdersSparseOrderBook(1_280_000);
+        System.out.println();
+        mePerf.benchmarkOrderBookMarketDepth(10_000);
+        mePerf.benchmarkOrderBookMarketDepth(20_000);
+        System.out.println();
+        mePerf.benchmakrOrderBookRemove(10_000);
+        mePerf.benchmakrOrderBookRemove(20_000);
+        mePerf.benchmakrOrderBookRemove(40_000);
+        mePerf.benchmakrOrderBookRemove(80_000);
+        mePerf.benchmakrOrderBookRemove(160_000);
+        mePerf.benchmakrOrderBookRemove(320_000);
+        mePerf.benchmakrOrderBookRemove(640_000);
+        mePerf.benchmakrOrderBookRemove(1_280_000);
     }
 }
