@@ -64,7 +64,7 @@ class MatchingEngineTest {
     void addBuyDifferentLevelsFill() {
         setup();
         Order order = new Order(99, Side.BUY, 36100, 3);
-        double initialOrderSize = 3;
+        double initialOrderSize = order.getSize();
         List<Trade> trades = matchingEngine.add(order);
 
         assertEquals(trades.size(), 4);
@@ -97,6 +97,30 @@ class MatchingEngineTest {
                 (initialOrderSize - trade3.getSize() - trade2.getSize() - trade1.getSize() - trade0.getSize()),
                 0.000000000001);
 
+    }
+
+    @Test
+    void addSellDifferentLevelsFill() {
+        setup();
+        Order order = new Order(99, Side.SELL, 35000.56, 0.6);
+        List<Trade> trades = matchingEngine.add(order);
+        System.out.println(trades);
+        assertEquals(trades.size(),  2);
+
+        Trade trade0 = trades.get(0);
+        assertEquals(trade0.getSize(), 0.5);
+        assertEquals(trade0.getMakerOrderId(), 5);
+        assertEquals(trade0.getTakerOrderId(), order.getOrderId());
+        assertEquals(trade0.getPrice(), 35100.56);
+
+        Trade trade1 = trades.get(1);
+        assertEquals(trade1.getSize(), 0.1, 0.000000000001);
+        assertEquals(trade1.getMakerOrderId(), 4);
+        assertEquals(trade1.getTakerOrderId(), order.getOrderId());
+        assertEquals(trade1.getPrice(), 35000.56);
+
+
+        assertEquals(matchingEngine.getOrder(4).getSize(), 0.3, 0.000000000001);
     }
 
     @Test

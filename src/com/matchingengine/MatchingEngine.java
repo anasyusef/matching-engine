@@ -63,7 +63,7 @@ public class MatchingEngine implements IMatchingEngine {
         Double bestBid = getBestBid();
         Double bestAsk = getBestAsk();
         // Order is suitable for matching
-        while ((bestBid != null && bestAsk != null) && (bestBid > bestAsk) && !(buyTree.isEmpty() || sellTree.isEmpty())) {
+        while ((bestBid != null && bestAsk != null) && (bestBid >= bestAsk) && !(buyTree.isEmpty() || sellTree.isEmpty())) {
             Queue<Order> buyQueue = buyTree.get(bestBid);
             Queue<Order> sellQueue = sellTree.get(bestAsk);
             Order peekBuy = buyQueue.peek();
@@ -71,6 +71,7 @@ public class MatchingEngine implements IMatchingEngine {
             if (peekBuy != null && peekSell != null) {
                 long makerOrderId;
                 double executedSize;
+                double executedPrice;
                 if (orderToMatch.getSide() == Side.BUY) {
                     makerOrderId = peekSell.getOrderId();
                 } else {
@@ -94,7 +95,13 @@ public class MatchingEngine implements IMatchingEngine {
                     _removeLimitIfEmpty(buyTree, buyQueue.isEmpty(), peekBuy.getPrice());
                     _removeLimitIfEmpty(sellTree, sellQueue.isEmpty(), peekSell.getPrice());
                 }
-                trades.add(new Trade(makerOrderId, orderToMatch.getOrderId(), peekSell.getPrice(), executedSize));
+                if (orderToMatch.getSide() == Side.BUY) {
+                    // We're matching with a sell order, so the price is the sell order's price
+                    executedPrice = peekSell.getPrice();
+                } else {
+                    executedPrice = peekBuy.getPrice();
+                }
+                trades.add(new Trade(makerOrderId, orderToMatch.getOrderId(), executedPrice, executedSize));
             }
             bestBid = getBestBid();
             bestAsk = getBestAsk();
