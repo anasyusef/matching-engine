@@ -141,8 +141,4 @@ class MatchingEngineTest {
     @Test
     void getMarketDepth() {
     }
-
-    @Test
-    void getMarketVolume() {
-    }
 }

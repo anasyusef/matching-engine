@@ -152,13 +152,34 @@ public class MatchingEngine implements IMatchingEngine {
         return orders;
     }
 
-    public long getMarketDepth() {
-        // TODO - Implement
-        return 0;
+    public double getMarketDepthAtLimit(Side side, double limitPrice) {
+        double totalSize = 0;
+        if (side == Side.BUY) {
+            Queue<Order> orders = this.buyTree.get(limitPrice);
+            for (Order order: orders) {
+                totalSize += order.getSize();
+            }
+        } else {
+            Queue<Order> orders = this.sellTree.get(limitPrice);
+            for (Order order: orders) {
+                totalSize += order.getSize();
+            }
+        }
+        return totalSize;
     }
 
-    public double getMarketVolume() {
-        // TODO - Implement
-        return 0;
+    public List<Map<Double, Double>> getMarketDepth() {
+        Map<Double, Double> buyMarketDepth = new HashMap<>();
+        Map<Double, Double> sellMarketDepth = new HashMap<>();
+
+        for (Double limitPrice: buyTree.keySet()) {
+            buyMarketDepth.put(limitPrice, getMarketDepthAtLimit(Side.BUY, limitPrice));
+        }
+
+        for (Double limitPrice: sellTree.keySet()) {
+            sellMarketDepth.put(limitPrice, getMarketDepthAtLimit(Side.SELL, limitPrice));
+        }
+
+        return new ArrayList<>(Arrays.asList(buyMarketDepth, sellMarketDepth));
     }
 }

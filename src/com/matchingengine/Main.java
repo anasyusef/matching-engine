@@ -12,17 +12,28 @@ public class Main {
 //        List<Order> orderList = new ArrayList<>();
 //        Trader trader = new Trader(1);
         MatchingEngine matchingEngine = new MatchingEngine("BTC/USD");
-        System.out.println(matchingEngine.add(new Order(1, Side.BUY, 35000, 1)));
-        System.out.println(matchingEngine.add(new Order(2, Side.BUY, 38000, 2)));
-        System.out.println(matchingEngine.add(new Order(3, Side.SELL, 33000, 1.5)));
-        System.out.println(matchingEngine.add(new Order(4, Side.SELL, 32000, 2)));
-        System.out.println(matchingEngine.getBuyOrders());
-        System.out.println(matchingEngine.getSellOrders());
-        System.out.println("Best bid: " + matchingEngine.getBestBid() + " Best ask: " + matchingEngine.getBestAsk());
+        String[][] orders = new String[][]{
+                {"150", "5", "buy"},
+                {"190", "1", "sell"},
+                {"200", "1", "sell"},
+                {"100", "9", "buy"},
+                {"140", "8", "sell"},
+                {"210", "4", "buy"},
+                {"210", "5", "sell"},
+                {"120", "4", "buy"},
+                {"120.5", "4.1", "buy"},
+                {"120.5", "5.2", "buy"},
+                {"120.5", "6.2", "buy"},
+                {"120.6", "6.2", "sell"},
+                {"120.4", "6.2", "sell"},
+                {"120.7", "6.2", "sell"},
+        };
 
-        matchingEngine.remove(3);
-        System.out.println("Best bid: " + matchingEngine.getBestBid() + " Best ask: " + matchingEngine.getBestAsk());
-//        System.out.println(matchingEngine.getMarketDepth());
-//        System.out.println(matchingEngine.getMarketVolume());
+        for(int i = 0; i < orders.length; i++) {
+            System.out.println(matchingEngine.add(new Order(i,
+                    orders[i][2].equals("buy") ? Side.BUY : Side.SELL, Double.parseDouble(orders[i][0]),
+                    Double.parseDouble(orders[i][1]))));
+            System.out.println(matchingEngine.getMarketDepth());
+        }
     }
 }
