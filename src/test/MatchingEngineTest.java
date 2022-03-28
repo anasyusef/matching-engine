@@ -4,7 +4,6 @@ import com.matchingengine.MatchingEngine;
 import com.matchingengine.Order;
 import com.matchingengine.Side;
 import com.matchingengine.Trade;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -12,6 +11,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MatchingEngineTest {
+
+    final double DELTA = 0.000000000001;
 
     private final MatchingEngine matchingEngine = new MatchingEngine("BTC/USDT");
 
@@ -35,7 +36,7 @@ class MatchingEngineTest {
     void getBestBid() {
         double bestBid = 35500.56;
         matchingEngine.add(new Order(99, Side.BUY, bestBid, 0.5));
-        assertEquals(matchingEngine.getBestBid(), bestBid);
+        assertEquals(bestBid, matchingEngine.getBestBid());
     }
 
     @Test
@@ -47,7 +48,7 @@ class MatchingEngineTest {
     void getBestAsk() {
         double bestAsk = 35900.50;
         matchingEngine.add(new Order(99, Side.SELL, bestAsk, 0.5));
-        assertEquals(matchingEngine.getBestAsk(), bestAsk);
+        assertEquals(bestAsk, matchingEngine.getBestAsk());
     }
 
     @Test
@@ -57,7 +58,7 @@ class MatchingEngineTest {
 
     @Test
     void getName() {
-        assertEquals(matchingEngine.getName(), "BTC/USDT");
+        assertEquals("BTC/USDT", matchingEngine.getName());
     }
 
     @Test
@@ -67,35 +68,36 @@ class MatchingEngineTest {
         double initialOrderSize = order.getSize();
         List<Trade> trades = matchingEngine.add(order);
 
-        assertEquals(trades.size(), 4);
+        assertEquals(4, trades.size());
 
         Trade trade0 = trades.get(0);
-        assertEquals(trade0.getSize(), 0.6);
-        assertEquals(trade0.getMakerOrderId(), 7);
-        assertEquals(trade0.getTakerOrderId(), order.getOrderId());
-        assertEquals(trade0.getPrice(), 36000);
+        assertEquals(0.6, trade0.getSize());
+        assertEquals(7, trade0.getMakerOrderId());
+        assertEquals(order.getOrderId(), trade0.getTakerOrderId());
+        assertEquals(36000, trade0.getPrice());
 
         Trade trade1 = trades.get(1);
-        assertEquals(trade1.getSize(), 0.6);
-        assertEquals(trade1.getMakerOrderId(), 11);
-        assertEquals(trade1.getTakerOrderId(), order.getOrderId());
-        assertEquals(trade1.getPrice(), 36010.56);
+        assertEquals(0.6, trade1.getSize());
+        assertEquals(11, trade1.getMakerOrderId());
+        assertEquals(order.getOrderId(), trade1.getTakerOrderId());
+        assertEquals(36010.56, trade1.getPrice());
 
         Trade trade2 = trades.get(2);
-        assertEquals(trade2.getSize(), 0.10);
-        assertEquals(trade2.getMakerOrderId(), 12);
-        assertEquals(trade2.getTakerOrderId(), order.getOrderId());
-        assertEquals(trade2.getPrice(), 36015.58);
+        assertEquals(0.10, trade2.getSize());
+        assertEquals(12, trade2.getMakerOrderId());
+        assertEquals(order.getOrderId(), trade2.getTakerOrderId());
+        assertEquals(36015.58, trade2.getPrice());
 
         Trade trade3 = trades.get(3);
-        assertEquals(trade3.getSize(), 0.3);
-        assertEquals(trade3.getMakerOrderId(), 10);
-        assertEquals(trade3.getTakerOrderId(), order.getOrderId());
-        assertEquals(trade3.getPrice(), 36050.56);
+        assertEquals(0.3, trade3.getSize());
+        assertEquals(10, trade3.getMakerOrderId());
+        assertEquals(order.getOrderId(), trade3.getTakerOrderId());
+        assertEquals(36050.56, trade3.getPrice());
 
-        assertEquals(order.getSize(),
-                (initialOrderSize - trade3.getSize() - trade2.getSize() - trade1.getSize() - trade0.getSize()),
-                0.000000000001);
+        assertEquals(initialOrderSize - trade3.getSize() - trade2.getSize() - trade1.getSize() -
+                        trade0.getSize(),
+                order.getSize(),
+                DELTA);
 
     }
 
@@ -108,19 +110,19 @@ class MatchingEngineTest {
         assertEquals(trades.size(),  2);
 
         Trade trade0 = trades.get(0);
-        assertEquals(trade0.getSize(), 0.5);
-        assertEquals(trade0.getMakerOrderId(), 5);
-        assertEquals(trade0.getTakerOrderId(), order.getOrderId());
-        assertEquals(trade0.getPrice(), 35100.56);
+        assertEquals(0.5, trade0.getSize());
+        assertEquals(5, trade0.getMakerOrderId());
+        assertEquals(order.getOrderId(), trade0.getTakerOrderId());
+        assertEquals(35100.56, trade0.getPrice());
 
         Trade trade1 = trades.get(1);
-        assertEquals(trade1.getSize(), 0.1, 0.000000000001);
-        assertEquals(trade1.getMakerOrderId(), 4);
-        assertEquals(trade1.getTakerOrderId(), order.getOrderId());
-        assertEquals(trade1.getPrice(), 35000.56);
+        assertEquals(0.1,  trade1.getSize(), DELTA);
+        assertEquals(4, trade1.getMakerOrderId());
+        assertEquals(order.getOrderId(), trade1.getTakerOrderId());
+        assertEquals(35000.56, trade1.getPrice());
 
 
-        assertEquals(matchingEngine.getOrder(4).getSize(), 0.3, 0.000000000001);
+        assertEquals(0.3, matchingEngine.getOrder(4).getSize(), DELTA);
     }
 
     @Test
@@ -132,8 +134,8 @@ class MatchingEngineTest {
         matchingEngine.remove(4);
         matchingEngine.remove(7);
         assertEquals(initialOrdersSize - 2, matchingEngine.getOrders().size());
-        assertEquals(matchingEngine.getBuyOrders().size(), initialBuyOrders - 1);
-        assertEquals(matchingEngine.getSellOrders().size(), initialSellOrders - 1);
+        assertEquals(initialBuyOrders - 1, matchingEngine.getBuyOrders().size());
+        assertEquals(initialSellOrders - 1, matchingEngine.getSellOrders().size());
     }
 
     @Test
